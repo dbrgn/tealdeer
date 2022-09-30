@@ -47,6 +47,10 @@ impl str::FromStr for PlatformType {
 }
 
 impl PlatformType {
+    pub fn get_platforms() -> Vec<&'static str> {
+        vec![ "linux", "osx", "sunos", "windows", "android" ]
+    }
+
     #[cfg(target_os = "linux")]
     pub fn current() -> Self {
         Self::Linux

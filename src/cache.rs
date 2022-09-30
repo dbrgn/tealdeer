@@ -289,16 +289,25 @@ impl Cache {
         let patch_path = Self::find_patch(&patch_filename, custom_pages_dir);
 
         // Try to find a platform specific path next, append custom patch to it.
-        let platform_dir = self.get_platform_dir();
-        if let Some(page) =
-            Self::find_page_for_platform(&page_filename, &cache_dir, platform_dir, &lang_dirs)
-        {
-            return Some(PageLookupResult::with_page(page).with_optional_patch(patch_path));
-        }
+        let current_platform = self.get_platform_dir();
 
-        // Did not find platform specific results, fall back to "common"
-        Self::find_page_for_platform(&page_filename, &cache_dir, "common", &lang_dirs)
-            .map(|page| PageLookupResult::with_page(page).with_optional_patch(patch_path))
+        let mut platforms = PlatformType::get_platforms();
+        platforms.push("common");
+
+        // remove the current platform from the vector and re-add it to the end
+        let index = platforms.iter().position(|&p| p == current_platform).unwrap();
+        platforms.remove(index);
+        platforms.push(current_platform);
+
+        // Cycle through all platforms in reverse order (current_platform - common - all other platforms)
+        for platform in platforms.iter().rev() {
+            if let Some(page) =
+                Self::find_page_for_platform(&page_filename, &cache_dir, platform, &lang_dirs)
+                {
+                    return Some(PageLookupResult::with_page(page).with_optional_patch(patch_path));
+                }
+        }
+        return None;
     }
 
     /// Return the available pages.
