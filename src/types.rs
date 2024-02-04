@@ -2,7 +2,6 @@
 
 use std::{fmt, str};
 
-use anyhow::{anyhow, Result};
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone, Serialize, Deserialize)]
@@ -11,8 +10,8 @@ use serde_derive::{Deserialize, Serialize};
 pub enum PlatformType {
     Linux,
     OsX,
-    SunOs,
     Windows,
+    SunOs,
     Android,
 }
 
@@ -28,20 +27,24 @@ impl fmt::Display for PlatformType {
     }
 }
 
-impl str::FromStr for PlatformType {
-    type Err = anyhow::Error;
+impl clap::ValueEnum for PlatformType {
+    fn value_variants<'a>() -> &'a [Self] {
+        &[
+            Self::Linux,
+            Self::OsX,
+            Self::Windows,
+            Self::SunOs,
+            Self::Android,
+        ]
+    }
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "linux" => Ok(Self::Linux),
-            "osx" | "macos" => Ok(Self::OsX),
-            "sunos" => Ok(Self::SunOs),
-            "windows" => Ok(Self::Windows),
-            "android" => Ok(Self::Android),
-            other => Err(anyhow!(
-                "Unknown OS: {}. Possible values: linux, macos, osx, sunos, windows, android",
-                other
-            )),
+    fn to_possible_value<'a>(&self) -> Option<clap::builder::PossibleValue> {
+        match self {
+            Self::Linux => Some(clap::builder::PossibleValue::new("linux")),
+            Self::OsX => Some(clap::builder::PossibleValue::new("macos").alias("osx")),
+            Self::Windows => Some(clap::builder::PossibleValue::new("windows")),
+            Self::SunOs => Some(clap::builder::PossibleValue::new("sunos")),
+            Self::Android => Some(clap::builder::PossibleValue::new("android")),
         }
     }
 }
@@ -96,18 +99,16 @@ pub enum ColorOptions {
     Never,
 }
 
-impl str::FromStr for ColorOptions {
-    type Err = anyhow::Error;
+impl clap::ValueEnum for ColorOptions {
+    fn value_variants<'a>() -> &'a [Self] {
+        &[Self::Always, Self::Auto, Self::Never]
+    }
 
-    fn from_str(s: &str) -> Result<Self> {
-        match s {
-            "always" => Ok(Self::Always),
-            "auto" => Ok(Self::Auto),
-            "never" => Ok(Self::Never),
-            other => Err(anyhow!(
-                "Unknown color option: {}. Possible values: always, auto, never",
-                other
-            )),
+    fn to_possible_value<'a>(&self) -> Option<clap::builder::PossibleValue> {
+        match self {
+            Self::Always => Some(clap::builder::PossibleValue::new("always")),
+            Self::Auto => Some(clap::builder::PossibleValue::new("auto")),
+            Self::Never => Some(clap::builder::PossibleValue::new("never")),
         }
     }
 }
