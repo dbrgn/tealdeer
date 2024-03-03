@@ -48,7 +48,7 @@ mod utils;
 
 use crate::{
     cache::{Cache, CacheFreshness, PageLookupResult, TLDR_PAGES_DIR},
-    cli::Args,
+    cli::Cli,
     config::{get_config_dir, get_config_path, make_default_config, Config, PathWithSource},
     extensions::Dedup,
     output::print_page,
@@ -65,7 +65,7 @@ const ARCHIVE_URL: &str = "https://tldr.sh/assets/tldr.zip";
 
 /// The cache should be updated if it was explicitly requested,
 /// or if an automatic update is due and allowed.
-fn should_update_cache(cache: &Cache, args: &Args, config: &Config) -> bool {
+fn should_update_cache(cache: &Cache, args: &Cli, config: &Config) -> bool {
     args.update
         || (!args.no_auto_update
             && config.updates.auto_update
@@ -81,7 +81,7 @@ enum CheckCacheResult {
 }
 
 /// Check the cache for freshness. If it's stale or missing, show a warning.
-fn check_cache(cache: &Cache, args: &Args, enable_styles: bool) -> CheckCacheResult {
+fn check_cache(cache: &Cache, args: &Cli, enable_styles: bool) -> CheckCacheResult {
     match cache.freshness() {
         CacheFreshness::Fresh => CheckCacheResult::CacheFound,
         CacheFreshness::Stale(_) if args.quiet => CheckCacheResult::CacheFound,
@@ -243,7 +243,7 @@ fn main() {
     init_log();
 
     // Parse arguments
-    let args = Args::parse();
+    let args = Cli::parse();
 
     // Determine the usage of styles
     #[cfg(target_os = "windows")]

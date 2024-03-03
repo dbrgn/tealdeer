@@ -1,30 +1,27 @@
-tealdeer 1.6.1
+tealdeer 1.2.3: A fast TLDR client
 Danilo Bargen <mail@dbrgn.ch>, Niklas Mohrin <dev@niklasmohrin.de>
-A fast TLDR client
 
-USAGE:
-    tldr [OPTIONS] [COMMAND]...
+Usage: tldr [OPTIONS] [COMMAND]...
 
-ARGS:
-    <COMMAND>...    The command to show (e.g. `tar` or `git log`)
+Arguments:
+  [COMMAND]...  The command to show (e.g. `tar` or `git log`)
 
-OPTIONS:
-    -l, --list                    List all commands in the cache
-    -f, --render <FILE>           Render a specific markdown file
-    -p, --platform <PLATFORMS>    Override the operating system [possible values: linux, macos,
-                                  windows, sunos, osx, android]
-    -L, --language <LANGUAGE>     Override the language
-    -u, --update                  Update the local cache
-        --no-auto-update          If auto update is configured, disable it for this run
-    -c, --clear-cache             Clear the local cache
-        --pager                   Use a pager to page output
-    -r, --raw                     Display the raw markdown instead of rendering it
-    -q, --quiet                   Suppress informational messages
-        --show-paths              Show file and directory paths used by tealdeer
-        --seed-config             Create a basic config
-        --color <WHEN>            Control whether to use color [possible values: always, auto,
-                                  never]
-    -v, --version                 Print the version
-    -h, --help                    Print help information
+Options:
+  -l, --list                  List all commands in the cache
+  -f, --render <FILE>         Render a specific markdown file
+  -p, --platform <PLATFORMS>  Override the operating system [possible values: linux, macos, windows,
+                              sunos, android]
+  -L, --language <LANGUAGE>   Override the language
+  -u, --update                Update the local cache
+      --no-auto-update        If auto update is configured, disable it for this run
+  -c, --clear-cache           Clear the local cache
+      --pager                 Use a pager to page output
+  -r, --raw                   Display the raw markdown instead of rendering it
+  -q, --quiet                 Suppress informational messages
+      --show-paths            Show file and directory paths used by tealdeer
+      --seed-config           Create a basic config
+      --color <WHEN>          Control whether to use color [possible values: always, auto, never]
+  -v, --version               Print the version
+  -h, --help                  Print help
 
 To view the user documentation, please visit https://dbrgn.github.io/tealdeer/.

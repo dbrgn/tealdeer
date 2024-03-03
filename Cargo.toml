@@ -23,7 +23,7 @@ path = "src/main.rs"
 anyhow = "1"
 app_dirs = { version = "2", package = "app_dirs2" }
 atty = "0.2"
-clap = { version = "3", features = ["std", "derive", "suggestions", "color"], default-features = false }
+clap = { version = "4", features = ["std", "derive", "help", "usage", "cargo", "error-context", "color", "wrap_help"], default-features = false }
 env_logger = { version = "0.10", optional = true }
 log = "0.4"
 reqwest = { version = "0.11.3", features = ["blocking"], default-features = false }
