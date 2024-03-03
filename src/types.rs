@@ -187,7 +187,7 @@ impl LineType {
 /// The reason why a certain path (e.g. config path or cache dir) was chosen.
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub enum PathSource {
-    /// OS convention (e.g. XDG on Linux)
+    /// OS convention (e.g. XDG on Unix)
     OsConvention,
     /// Env variable (TEALDEER_*)
     EnvVar,
@@ -201,7 +201,12 @@ impl fmt::Display for PathSource {
             f,
             "{}",
             match self {
-                Self::OsConvention => "OS convention",
+                Self::OsConvention =>
+                    if cfg!(windows) {
+                        "Windows convention"
+                    } else {
+                        "XDG convention"
+                    },
                 Self::EnvVar => "env variable",
                 Self::ConfigFile => "config file",
             }

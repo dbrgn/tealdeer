@@ -6,12 +6,13 @@ use std::{
 };
 
 use anyhow::{bail, ensure, Context, Result};
-use app_dirs::{get_app_root, AppDataType};
+use etcetera::{AppStrategy, AppStrategyArgs, HomeDirError};
 use log::debug;
 use serde_derive::{Deserialize, Serialize};
 use yansi::{Color, Style};
 
 use crate::types::PathSource;
+use crate::NAME;
 
 pub const CONFIG_FILE_NAME: &str = "config.toml";
 pub const MAX_CACHE_AGE: Duration = Duration::from_secs(2_592_000); // 30 days
@@ -291,6 +292,22 @@ pub struct Config {
 }
 
 impl Config {
+    /// Get the appdirs for the current platform.
+    fn get_appdirs() -> Result<impl AppStrategy, HomeDirError> {
+        etcetera::choose_app_strategy(AppStrategyArgs {
+            top_level_domain: "org".into(),
+            author: NAME.into(),
+            app_name: NAME.into(),
+        })
+    }
+
+    pub fn pop_if_windows(mut path: PathBuf) -> PathBuf {
+        if cfg!(windows) {
+            path.pop();
+        }
+        path
+    }
+
     /// Convert a `RawConfig` to a high-level `Config`.
     ///
     /// For this, some values need to be converted to other types and some
@@ -319,10 +336,10 @@ impl Config {
                 path: config_value,
                 source: PathSource::ConfigFile,
             }
-        } else if let Ok(default_dir) = get_app_root(AppDataType::UserCache, &crate::APP_INFO) {
+        } else if let Ok(appdirs) = Self::get_appdirs() {
             // Otherwise, fall back to the default user cache directory.
             PathWithSource {
-                path: default_dir,
+                path: Self::pop_if_windows(appdirs.cache_dir()),
                 source: PathSource::OsConvention,
             }
         } else {
@@ -337,15 +354,14 @@ impl Config {
                 source: PathSource::ConfigFile,
             })
             .or_else(|| {
-                get_app_root(AppDataType::UserData, &crate::APP_INFO)
-                    .map(|path| {
-                        // Note: The `join("")` call ensures that there's a trailing slash
-                        PathWithSource {
-                            path: path.join("pages").join(""),
-                            source: PathSource::OsConvention,
-                        }
+                if let Ok(appdirs) = Self::get_appdirs() {
+                    Some(PathWithSource {
+                        path: Self::pop_if_windows(appdirs.cache_dir()).join("pages"),
+                        source: PathSource::OsConvention,
                     })
-                    .ok()
+                } else {
+                    None
+                }
             });
         let directories = DirectoriesConfig {
             cache_dir,
@@ -415,9 +431,11 @@ pub fn get_config_dir() -> Result<(PathBuf, PathSource)> {
     };
 
     // Otherwise, fall back to the user config directory.
-    let dirs = get_app_root(AppDataType::UserConfig, &crate::APP_INFO)
-        .context("Failed to determine the user config directory")?;
-    Ok((dirs, PathSource::OsConvention))
+    let appdirs = Config::get_appdirs().context("Failed to determine the user home directory")?;
+    Ok((
+        Config::pop_if_windows(appdirs.config_dir()),
+        PathSource::OsConvention,
+    ))
 }
 
 /// Return the path to the config file.
