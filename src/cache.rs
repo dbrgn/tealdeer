@@ -9,7 +9,7 @@ use std::{
 
 use anyhow::{ensure, Context, Result};
 use log::debug;
-use reqwest::{blocking::Client, Proxy};
+use reqwest::{blocking::Client, Proxy, StatusCode};
 use walkdir::{DirEntry, WalkDir};
 use zip::ZipArchive;
 
@@ -136,7 +136,7 @@ impl Cache {
     }
 
     /// Download the archive from the specified URL.
-    fn download(archive_url: &str) -> Result<Vec<u8>> {
+    fn download(archive_url: &str) -> Result<Option<Vec<u8>>> {
         let mut builder = Client::builder();
         if let Ok(ref host) = env::var("HTTP_PROXY") {
             if let Ok(proxy) = Proxy::http(host) {
@@ -151,29 +151,60 @@ impl Cache {
         let client = builder
             .build()
             .context("Could not instantiate HTTP client")?;
-        let mut resp = client
-            .get(archive_url)
-            .send()?
+        debug!("Trying to download {archive_url}");
+        let response = client.get(archive_url).send()?;
+        if response.status() == StatusCode::NOT_FOUND {
+            return Ok(None);
+        }
+        let mut response = response
             .error_for_status()
-            .with_context(|| format!("Could not download tldr pages from {archive_url}"))?;
+            .with_context(|| format!("Unexpected HTTP error downloading {archive_url}"))?;
         let mut buf: Vec<u8> = vec![];
-        let bytes_downloaded = resp.copy_to(&mut buf)?;
+        let bytes_downloaded = response.copy_to(&mut buf)?;
         debug!("{} bytes downloaded", bytes_downloaded);
-        Ok(buf)
+        Ok(Some(buf))
     }
 
     /// Update the pages cache from the specified URL.
-    pub fn update(&self, archive_url: &str) -> Result<()> {
+    pub fn update(&self, archives_url: &str, languages: &[String]) -> Result<()> {
         self.ensure_cache_dir_exists()?;
 
-        // First, download the compressed data
-        let bytes: Vec<u8> = Self::download(archive_url)?;
+        debug!("Updating with languages: {}", languages.join(", "));
 
-        // Decompress the response body into an `Archive`
-        let mut archive = ZipArchive::new(Cursor::new(bytes))
-            .context("Could not decompress downloaded ZIP archive")?;
+        // Download all archives before starting to unpack them so that we leave the cache intact
+        // if any unexpected errors happen.
+        let downloaded_archives = languages
+            .iter()
+            .flat_map(|language| {
+                let url = if language == "en" {
+                    format!("{archives_url}/tldr-pages.zip")
+                } else {
+                    format!("{archives_url}/tldr-pages.{language}.zip")
+                };
 
-        // Clear cache directory
+                let result = Self::download(&url).transpose().map(|bytes| {
+                    ZipArchive::new(Cursor::new(bytes?))
+                        .map(|archive| (language, archive))
+                        .with_context(|| {
+                            format!(
+                                "Could not open downloaded ZIP archive for language \"{language}\""
+                            )
+                        })
+                });
+
+                if result.is_none() {
+                    debug!("No archive for language \"{language}\" found on server, ignoring.");
+                }
+
+                result
+            })
+            .collect::<Result<Vec<_>>>()?;
+
+        ensure!(
+            !downloaded_archives.is_empty(),
+            "No archives were downloaded, please check the list of specified languages and make sure it contains at least one valid language."
+        );
+
         // Note: This is not the best solution. Ideally we would download the
         // archive to a temporary directory and then swap the two directories.
         // But renaming a directory doesn't work across filesystems and Rust
@@ -182,10 +213,21 @@ impl Cache {
         self.clear()
             .context("Could not clear the cache directory")?;
 
-        // Extract archive into pages dir
-        archive
-            .extract(&self.pages_dir())
-            .context("Could not unpack compressed data")?;
+        let pages_dir = self.pages_dir();
+
+        for (language, mut archive) in downloaded_archives {
+            let subdirectory_name = if language == "en" {
+                "pages".to_string()
+            } else {
+                format!("pages.{language}")
+            };
+
+            archive
+                .extract(pages_dir.join(subdirectory_name))
+                .with_context(|| {
+                    format!("Could not unpack compressed data for language \"{language}\"")
+                })?;
+        }
 
         Ok(())
     }
