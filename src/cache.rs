@@ -218,6 +218,9 @@ impl Cache {
             PlatformType::SunOs => "sunos",
             PlatformType::Windows => "windows",
             PlatformType::Android => "android",
+            PlatformType::FreeBSD => "freebsd",
+            PlatformType::NetBSD => "netbsd",
+            PlatformType::OpenBSD => "openbsd",
         }
     }
 

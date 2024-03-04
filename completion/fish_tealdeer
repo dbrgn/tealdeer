@@ -7,7 +7,7 @@ complete -c tldr -s h -l help           -d 'Print the help message.' -f
 complete -c tldr -s v -l version        -d 'Show version information.' -f
 complete -c tldr -s l -l list           -d 'List all commands in the cache.' -f
 complete -c tldr -s f -l render         -d 'Render a specific markdown file.' -r
-complete -c tldr -s p -l platform       -d 'Override the operating system.' -xa 'linux macos sunos windows android'
+complete -c tldr -s p -l platform       -d 'Override the operating system.' -xa 'linux macos sunos windows android freebsd netbsd openbsd'
 complete -c tldr -s L -l language       -d 'Override the language' -x
 complete -c tldr -s u -l update         -d 'Update the local cache.' -f
 complete -c tldr      -l no-auto-update -d 'If auto update is configured, disable it for this run.' -f

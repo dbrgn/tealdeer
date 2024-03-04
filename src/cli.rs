@@ -40,7 +40,7 @@ pub(crate) struct Args {
         short = 'p',
         long = "platform",
         action = ArgAction::Append,
-        possible_values = ["linux", "macos", "windows", "sunos", "osx", "android"],
+        possible_values = ["linux", "macos", "windows", "sunos", "osx", "android", "freebsd", "netbsd", "openbsd"],
     )]
     pub platforms: Option<Vec<PlatformType>>,
 

@@ -12,7 +12,7 @@ OPTIONS:
     -l, --list                    List all commands in the cache
     -f, --render <FILE>           Render a specific markdown file
     -p, --platform <PLATFORMS>    Override the operating system [possible values: linux, macos,
-                                  windows, sunos, osx, android]
+                                  windows, sunos, osx, android, freebsd, netbsd, openbsd]
     -L, --language <LANGUAGE>     Override the language
     -u, --update                  Update the local cache
         --no-auto-update          If auto update is configured, disable it for this run

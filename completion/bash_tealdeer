@@ -14,7 +14,7 @@ _tealdeer()
 			return
 			;;
 		-p|--platform)
-			COMPREPLY=( $(compgen -W 'linux macos sunos windows android' -- "${cur}") )
+			COMPREPLY=( $(compgen -W 'linux macos sunos windows android freebsd netbsd openbsd' -- "${cur}") )
 			return
 			;;
 		--color)
