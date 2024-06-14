@@ -6,7 +6,7 @@ format](https://toml.io/) called `config.toml`.
 ## Configfile Path
 
 The configuration file path follows OS conventions (e.g.
-`$XDG_CONFIG_HOME/tealdeer/config.toml` on Linux). The paths can be queried
+`$XDG_CONFIG_HOME/tealdeer/config.toml` on Unix). The paths can be queried
 with the following command:
 
     $ tldr --show-paths
@@ -15,7 +15,7 @@ Creating the config file can be done manually or with the help of `tldr`:
 
     $ tldr --seed-config
 
-On Linux, this will usually be `~/.config/tealdeer/config.toml`.
+On Unix, this will usually be `~/.config/tealdeer/config.toml`.
 
 ## Config Example
 

@@ -296,7 +296,7 @@ fn test_cache_location_source() {
         .arg("--show-paths")
         .assert()
         .success()
-        .stdout(is_match("\nCache dir:        [^(]* \\(OS convention\\)\n").unwrap());
+        .stdout(is_match("\nCache dir:        [^(]* \\(XDG convention\\)\n").unwrap());
 
     // Source: Config variable
     let mut command = testenv.command();

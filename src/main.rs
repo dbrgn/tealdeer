@@ -32,7 +32,6 @@ compile_error!(
 
 use std::{env, process};
 
-use app_dirs::AppInfo;
 use atty::Stream;
 use clap::Parser;
 
@@ -57,10 +56,6 @@ use crate::{
 };
 
 const NAME: &str = "tealdeer";
-const APP_INFO: AppInfo = AppInfo {
-    name: NAME,
-    author: NAME,
-};
 const ARCHIVE_URL: &str = "https://tldr.sh/assets/tldr.zip";
 
 /// The cache should be updated if it was explicitly requested,
