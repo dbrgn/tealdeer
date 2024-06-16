@@ -61,7 +61,7 @@ const APP_INFO: AppInfo = AppInfo {
     name: NAME,
     author: NAME,
 };
-const ARCHIVE_URL: &str = "https://tldr.sh/assets/tldr.zip";
+const ARCHIVES_URL: &str = "https://tldr.sh/assets/";
 
 /// The cache should be updated if it was explicitly requested,
 /// or if an automatic update is due and allowed.
@@ -133,8 +133,8 @@ fn clear_cache(cache: &Cache, quietly: bool, enable_styles: bool) {
 }
 
 /// Update the cache
-fn update_cache(cache: &Cache, quietly: bool, enable_styles: bool) {
-    cache.update(ARCHIVE_URL).unwrap_or_else(|e| {
+fn update_cache(cache: &Cache, languages: &[String], quietly: bool, enable_styles: bool) {
+    cache.update(ARCHIVES_URL, languages).unwrap_or_else(|e| {
         print_error(enable_styles, &e.context("Could not update cache"));
         process::exit(1);
     });
@@ -308,9 +308,14 @@ fn main() {
         clear_cache(&cache, args.quiet, enable_styles);
     }
 
+    let languages = match args.language.as_ref() {
+        Some(language) => vec![language.to_owned()],
+        None => get_languages_from_env(),
+    };
+
     // Cache update, pass through
     let cache_updated = if should_update_cache(&cache, &args, &config) {
-        update_cache(&cache, args.quiet, enable_styles);
+        update_cache(&cache, &languages, args.quiet, enable_styles);
         true
     } else {
         false
@@ -344,11 +349,6 @@ fn main() {
         // lowercased before lookup:
         // https://github.com/tldr-pages/tldr/blob/main/CLIENT-SPECIFICATION.md#page-names
         let command = args.command.join("-").to_lowercase();
-
-        // Collect languages
-        let languages = args
-            .language
-            .map_or_else(get_languages_from_env, |lang| vec![lang]);
 
         // Search for command in cache
         if let Some(lookup_result) = cache.find_page(
