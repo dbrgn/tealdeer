@@ -1,4 +1,4 @@
-tealdeer 1.6.1: A fast TLDR client
+tealdeer 1.7.0: A fast TLDR client
 Danilo Bargen <mail@dbrgn.ch>, Niklas Mohrin <dev@niklasmohrin.de>
 
 Usage: tldr [OPTIONS] [COMMAND]...

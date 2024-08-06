@@ -14,6 +14,74 @@ Possible log types:
 - `[chore]` for maintenance work.
 
 
+### [v1.7.0][v1.7.0] (2022-10-24)
+
+It's been 20 months since the last release, time for Tealdeer 1.7.0! Thanks to
+16 individual contributors, a few nice changes and features are included in
+this release.
+
+One change is that you can **query multiple platforms at once**. For example:
+
+    tldr --platform openbsd --platform linux df
+
+This will show the `df` page for OpenBSD (if available), followed by Linux (if
+available), with fallback to the current platform on which Tealdeer runs.
+
+What's that `openbsd` thing up there? Yes, there's now **support for the BSD
+platforms `freebsd`, `netbsd` and `openbsd`**.
+
+And since we're already talking about platform support: Our **binary releases
+now include builds for ARM64 (aka `aarch64`) on macOS (Apple Silicon, M1/M2/M3)
+and Linux**. _(Keep in mind that binary releases are generated in CI and are
+unsigned. For a trusted build, please compile from source.)_
+
+There's also a breaking change for the folks using [custom pages and
+patches](https://dbrgn.github.io/tealdeer/usage_custom_pages.html): These files
+now use a `.md` extension. Old files will continue to work, but will result a
+deprecation warning being printed when used.
+
+Changes:
+
+- [added] Allow querying multiple platforms ([#300])
+- [added] Add BSD platform support ([#354])
+- [added] Allow building with native-tls in addition to rustls ([#303])
+- [changed] Change custom page files to use a `.md` file extension ([#322])
+- [changed] Update to clap v4 for doing command line parsing ([#298])
+- [changed] Performance optimization in LineIterator ([#314])
+- [changed] Performance optimizations by tweaking Cargo flags ([#355])
+- [changed] Include completions in published crate ([#333])
+- [changed] Minimal supported Rust version is now 1.75 ([#298])
+- [fixed] Fix bash/zsh/fish completions when cache is empty ([#327], [#331])
+- [docs] Publish docs only when tagging a release ([#362])
+- [docs] List Scoop and Debian packages ([#305], [#315])
+- [docs] Add "Tips and Tricks" chapter to user manual ([#342])
+- [docs] Various docs improvements ([#293])
+- [chore] Improvements to CI workflows ([#324])
+- [chore] Update Cargo.toml license field following SPDX 2.1 ([#336])
+- [chore] Dependency updates
+
+Contributors to this version:
+
+- [Adam Henley][@adamazing]
+- [Andrea Frigido][@frisoft]
+- [Blair Noctis][@nc7s]
+- [Danilo Bargen][@dbrgn]
+- [Felix Yan][@felixonmars]
+- [Iliia Maleki][@iliya-malecki]
+- [JJ Style][@jj-style]
+- [K.B.Dharun Krishna][@kbdharun]
+- [Linus Walker][@Walker-00]
+- [Mohit Raj][@agrmohit]
+- [Nicolai Fröhlich][@nifr]
+- [Niklas Mohrin][@niklasmohrin]
+- [@qknogxxb][@qknogxxb]
+- [@tveness][@tveness]
+- [Y.D.X.][@YDX-2147483647]
+- [Zacchary Dempsey-Plante][@zedseven]
+
+Thanks!
+
+
 ### [v1.6.1][v1.6.1] (2022-10-24)
 
 Changes:
@@ -296,7 +364,10 @@ Thanks!
 - First crates.io release
 
 
+
 [@0ndorio]: https://github.com/0ndorio
+[@adamazing]: https://github.com/adamazing
+[@agrmohit]: https://github.com/agrmohit
 [@aldanor]: https://github.com/aldanor
 [@Atul9]: https://github.com/Atul9
 [@BachoSeven]: https://github.com/BachoSeven
@@ -314,15 +385,20 @@ Thanks!
 [@Delapouite]: https://github.com/Delapouite
 [@dmaahs2017]: https://github.com/dmaahs2017
 [@equal-l2]: https://github.com/equal-l2
+[@felixonmars]: https://github.com/felixonmars
+[@frisoft]: https://github.com/frisoft
 [@gagarine]: https://github.com/gagarine
 [@hgaiser]: https://github.com/hgaiser
 [@ilai-deutel]: https://github.com/ilai-deutel
+[@iliya-malecki]: https://github.com/iliya-malecki
 [@invakid404]: https://github.com/invakid404
 [@james2doyle]: https://github.com/james2doyle
 [@jcgruenhage]: https://github.com/jcgruenhage
 [@jdvr]: https://github.com/jdvr
 [@jedahan]: https://github.com/jedahan
 [@jesdazrez]: https://github.com/jesdazrez
+[@jj-style]: https://github.com/jj-style
+[@kbdharun]: https://github.com/kbdharun
 [@kianmeng]: https://github.com/kianmeng
 [@kornelski]: https://github.com/kornelski
 [@korrat]: https://github.com/korrat
@@ -333,10 +409,13 @@ Thanks!
 [@mucinoab]: https://github.com/mucinoab
 [@mystal]: https://github.com/mystal
 [@natpen]: https://github.com/natpen
+[@nc7s]: https://github.com/nc7s
 [@newsch]: https://github.com/newsch
+[@nifr]: https://github.com/nifr
 [@niklasmohrin]: https://github.com/niklasmohrin
 [@Olavhaasie]: https://github.com/Olavhaasie
 [@Plommonsorbet]: https://github.com/Plommonsorbet
+[@qknogxxb]: https://github.com/qknogxxb
 [@rithvikvibhu]: https://github.com/rithvikvibhu
 [@SimplyDanny]: https://github.com/SimplyDanny
 [@sondr3]: https://github.com/sondr3
@@ -344,6 +423,9 @@ Thanks!
 [@tranzystorek-io]: https://github.com/tranzystorek-io
 [@tveness]: https://github.com/tveness
 [@Voultapher]: https://github.com/Voultapher
+[@Walker-00]: https://github.com/Walker-00
+[@YDX-2147483647]: https://github.com/YDX-2147483647
+[@zedseven]: https://github.com/zedseven
 
 [v1.0.0]: https://github.com/dbrgn/tealdeer/compare/v0.4.0...v1.0.0
 [v1.1.0]: https://github.com/dbrgn/tealdeer/compare/v1.0.0...v1.1.0
@@ -354,6 +436,7 @@ Thanks!
 [v1.5.0]: https://github.com/dbrgn/tealdeer/compare/v1.4.1...v1.5.0
 [v1.6.0]: https://github.com/dbrgn/tealdeer/compare/v1.5.0...v1.6.0
 [v1.6.1]: https://github.com/dbrgn/tealdeer/compare/v1.6.0...v1.6.1
+[v1.7.0]: https://github.com/dbrgn/tealdeer/compare/v1.6.1...v1.7.0
 
 [i34]: https://github.com/dbrgn/tealdeer/issues/34
 [i43]: https://github.com/dbrgn/tealdeer/issues/43
@@ -418,5 +501,22 @@ Thanks!
 [#287]: https://github.com/dbrgn/tealdeer/pull/287
 [#290]: https://github.com/dbrgn/tealdeer/pull/290
 [#291]: https://github.com/dbrgn/tealdeer/pull/291
+[#293]: https://github.com/dbrgn/tealdeer/pull/293
 [#297]: https://github.com/dbrgn/tealdeer/pull/297
+[#298]: https://github.com/dbrgn/tealdeer/pull/298
 [#299]: https://github.com/dbrgn/tealdeer/pull/299
+[#300]: https://github.com/dbrgn/tealdeer/pull/300
+[#303]: https://github.com/dbrgn/tealdeer/pull/303
+[#305]: https://github.com/dbrgn/tealdeer/pull/305
+[#314]: https://github.com/dbrgn/tealdeer/pull/314
+[#315]: https://github.com/dbrgn/tealdeer/pull/315
+[#322]: https://github.com/dbrgn/tealdeer/pull/322
+[#324]: https://github.com/dbrgn/tealdeer/pull/324
+[#327]: https://github.com/dbrgn/tealdeer/pull/327
+[#331]: https://github.com/dbrgn/tealdeer/pull/331
+[#333]: https://github.com/dbrgn/tealdeer/pull/333
+[#336]: https://github.com/dbrgn/tealdeer/pull/336
+[#342]: https://github.com/dbrgn/tealdeer/pull/342
+[#354]: https://github.com/dbrgn/tealdeer/pull/354
+[#355]: https://github.com/dbrgn/tealdeer/pull/355
+[#362]: https://github.com/dbrgn/tealdeer/pull/362
