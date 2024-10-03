@@ -24,3 +24,13 @@ is set to `false`.
     auto_update = true
     auto_update_interval_hours = 24
 
+### archive_url
+
+URL for the location of tldr pages archive. Default is the main `thdr.sh`
+archive location.
+
+    [updates]
+    auto_update = true
+    auto_update_interval_hours = 24
+    archive_url = https://tldr.infra.local/assets/tldr.zip
+

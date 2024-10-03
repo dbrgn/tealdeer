@@ -16,6 +16,7 @@ use crate::types::PathSource;
 pub const CONFIG_FILE_NAME: &str = "config.toml";
 pub const MAX_CACHE_AGE: Duration = Duration::from_secs(2_592_000); // 30 days
 const DEFAULT_UPDATE_INTERVAL_HOURS: u64 = MAX_CACHE_AGE.as_secs() / 3600; // 30 days
+const ARCHIVE_URL: &str = "https://tldr.sh/assets/tldr.zip";
 
 fn default_underline() -> bool {
     false
@@ -166,12 +167,18 @@ const fn default_auto_update_interval_hours() -> u64 {
     DEFAULT_UPDATE_INTERVAL_HOURS
 }
 
+fn default_archive_url() -> String {
+    ARCHIVE_URL.to_owned()
+}
+
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 struct RawUpdatesConfig {
     #[serde(default)]
     pub auto_update: bool,
     #[serde(default = "default_auto_update_interval_hours")]
     pub auto_update_interval_hours: u64,
+    #[serde(default = "default_archive_url")]
+    pub archive_url: String,
 }
 
 impl Default for RawUpdatesConfig {
@@ -179,6 +186,7 @@ impl Default for RawUpdatesConfig {
         Self {
             auto_update: false,
             auto_update_interval_hours: DEFAULT_UPDATE_INTERVAL_HOURS,
+            archive_url: default_archive_url(),
         }
     }
 }
@@ -190,6 +198,7 @@ impl From<RawUpdatesConfig> for UpdatesConfig {
             auto_update_interval: Duration::from_secs(
                 raw_updates_config.auto_update_interval_hours * 3600,
             ),
+            archive_url: raw_updates_config.archive_url,
         }
     }
 }
@@ -252,10 +261,11 @@ pub struct DisplayConfig {
     pub use_pager: bool,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct UpdatesConfig {
     pub auto_update: bool,
     pub auto_update_interval: Duration,
+    pub archive_url: String,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]

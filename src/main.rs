@@ -64,7 +64,6 @@ const APP_INFO: AppInfo = AppInfo {
     name: NAME,
     author: NAME,
 };
-const ARCHIVE_URL: &str = "https://tldr.sh/assets/tldr.zip";
 
 /// The cache should be updated if it was explicitly requested,
 /// or if an automatic update is due and allowed.
@@ -136,8 +135,8 @@ fn clear_cache(cache: &Cache, quietly: bool, enable_styles: bool) {
 }
 
 /// Update the cache
-fn update_cache(cache: &Cache, quietly: bool, enable_styles: bool) {
-    cache.update(ARCHIVE_URL).unwrap_or_else(|e| {
+fn update_cache(cache: &Cache, archive_url: &str, quietly: bool, enable_styles: bool) {
+    cache.update(archive_url).unwrap_or_else(|e| {
         print_error(enable_styles, &e.context("Could not update cache"));
         process::exit(1);
     });
@@ -313,7 +312,8 @@ fn main() {
 
     // Cache update, pass through
     let cache_updated = if should_update_cache(&cache, &args, &config) {
-        update_cache(&cache, args.quiet, enable_styles);
+        let archive_url = config.updates.archive_url.as_str();
+        update_cache(&cache, archive_url, args.quiet, enable_styles);
         true
     } else {
         false
