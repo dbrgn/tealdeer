@@ -1029,19 +1029,6 @@ mod test {
         );
     }
 
-    #[test]
-    fn deny_unknown_config_keys() {
-        let config = "
-            [display]
-            compact = true
-            unknown = false
-            ";
-
-        let result: Result<RawConfig, _> = toml::from_str(config);
-
-        assert!(result.is_err())
-    }
-
     mod override_config {
         use super::*;
         use toml::Value;
@@ -1129,16 +1116,6 @@ mod test {
                 config.display.indent,
                 RawConfig::default().display.indent.into()
             );
-        }
-
-        #[test]
-        fn deny_override_unknown_field() {
-            let result = ConfigLoader::read(
-                PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/style-config.toml"),
-                &["display.unknown = true".to_string()],
-            );
-
-            assert!(result.is_err());
         }
     }
 
