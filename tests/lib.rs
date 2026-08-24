@@ -1513,7 +1513,12 @@ fn test_failure_on_unknown_field_in_config() {
         ",
     );
 
-    testenv.command().args(["which"]).assert().failure();
+    testenv
+        .command()
+        .args(["which"])
+        .assert()
+        .failure()
+        .stderr(contains("unknown field `unknown`"));
 }
 
 #[test]
@@ -1524,7 +1529,8 @@ fn test_failure_on_unknown_field_in_override_config() {
         .command()
         .args(["--override-config", "display.invalid=true", "which"])
         .assert()
-        .failure();
+        .failure()
+        .stderr(contains("unknown field `invalid`"));
 }
 
 mod placeholder_format {
