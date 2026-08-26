@@ -8,7 +8,8 @@ There are a few different ways to install tealdeer:
 - By [building from source](#build-from-source)
 
 Additionally, when not using system packages, you can [manually install
-autocompletions](#autocompletion).
+autocompletions](#autocompletion) and set up a [background cache
+update](#updating-the-cache-in-the-background-systemd).
 
 ## Package Managers
 
@@ -72,3 +73,31 @@ Just copy them to their designated location:
 - *Bash*: `cp completion/bash_tealdeer /usr/share/bash-completion/completions/tldr`
 - *Fish*: `cp completion/fish_tealdeer ~/.config/fish/completions/tldr.fish`
 - *Zsh*: `cp completion/zsh_tealdeer /usr/share/zsh/site-functions/_tldr`
+
+## Updating the cache in the background (systemd)
+
+The [`auto_update`](config_updates.md#auto_update) setting refreshes the cache
+while you run a `tldr` command, which means that command occasionally blocks for
+a few seconds. If you would rather keep the cache fresh out of band, the
+`systemd` folder ships a timer and a service that run `tldr --update` on a
+schedule.
+
+Because the cache lives in your user's cache directory, these are *user* units,
+so install them for your account rather than system wide:
+
+```shell
+$ cp systemd/tealdeer-update.service systemd/tealdeer-update.timer ~/.config/systemd/user/
+$ systemctl --user daemon-reload
+$ systemctl --user enable --now tealdeer-update.timer
+```
+
+The timer fires weekly by default and is `Persistent`, so a run that was missed
+while the machine was off happens on the next boot. `tldr --update` just prints
+an error and exits if the network is down, and the timer tries again on its next
+run, so there is no separate `network-online.target` dependency to wire up (that
+target is only managed by the system instance, not the per-user one anyway).
+Adjust `OnCalendar` in the timer to taste.
+
+The `.service` file calls `/usr/bin/tldr`, which is where distribution packages
+put the binary. If you installed tealdeer another way, edit its `ExecStart` to
+match (for example `%h/.cargo/bin/tldr` for `cargo install`).

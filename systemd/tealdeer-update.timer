@@ -1,0 +1,14 @@
+[Unit]
+Description=Periodically update the tealdeer tldr page cache
+
+[Timer]
+OnCalendar=weekly
+# Catch up on the next boot if the machine was off when the timer should have
+# fired (e.g. on a laptop).
+Persistent=true
+# Spread the load on the tldr-pages release server so many machines do not all
+# fetch at exactly the same time.
+RandomizedDelaySec=1h
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=Update the tealdeer tldr page cache
+Documentation=https://github.com/tealdeer-rs/tealdeer
+
+[Service]
+Type=oneshot
+# Packagers install the binary as /usr/bin/tldr. If you installed tealdeer
+# some other way (e.g. cargo install), point this at your own binary, such as
+# %h/.cargo/bin/tldr.
+ExecStart=/usr/bin/tldr --update
