@@ -389,14 +389,16 @@ fn test_quiet_cache() {
         .args(["--update", "--quiet"])
         .assert()
         .success()
-        .stdout(is_empty());
+        .stdout(is_empty())
+        .stderr(is_empty());
 
     testenv
         .command()
         .args(["--clear-cache", "--quiet"])
         .assert()
         .success()
-        .stdout(is_empty());
+        .stdout(is_empty())
+        .stderr(is_empty());
 }
 
 #[test]
@@ -483,6 +485,34 @@ fn test_quiet_old_cache() {
         .assert()
         .success()
         .stderr(contains("The cache hasn't been updated for ").not());
+}
+
+#[test]
+fn test_quiet_old_custom_pages() {
+    let testenv = TestEnv::new()
+        .install_default_cache()
+        .write_custom_pages_config();
+
+    // A custom page still using the old naming convention.
+    fs::write(
+        testenv.custom_pages_dir().join("legacy.page"),
+        b"# legacy\n",
+    )
+    .unwrap();
+
+    testenv
+        .command()
+        .args(["which"])
+        .assert()
+        .success()
+        .stderr(contains("old naming convention"));
+
+    testenv
+        .command()
+        .args(["which", "--quiet"])
+        .assert()
+        .success()
+        .stderr(contains("old naming convention").not());
 }
 
 #[test]

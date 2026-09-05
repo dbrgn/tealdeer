@@ -309,7 +309,7 @@ fn try_main(args: Cli, enable_styles: bool) -> Result<ExitCode> {
     }
 
     let cache = if args.update || config.updates.auto_update && !args.no_auto_update {
-        let (mut cache, was_created) = Cache::open_or_create(cache_config)?;
+        let (mut cache, was_created) = Cache::open_or_create(cache_config, args.quiet)?;
         if was_created || args.update || cache.age()? >= config.updates.auto_update_interval {
             let result = update_cache(
                 &mut cache,
@@ -400,7 +400,7 @@ fn try_main(args: Cli, enable_styles: bool) -> Result<ExitCode> {
     // Show command from cache
     if !command.is_empty() {
         // TODO: remove in tealdeer 1.10
-        if cache.old_custom_pages_exist()? {
+        if !args.quiet && cache.old_custom_pages_exist()? {
             print_warning(
                 enable_styles,
                 &format!(

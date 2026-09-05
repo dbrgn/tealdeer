@@ -65,7 +65,7 @@ impl<'a> Cache<'a> {
     /// Open an existing cache at `config.pages_directory` or create one if no cache resides at
     /// this location. In case of success, the return value is a tuple with the `Cache` and a
     /// boolean indicating whether the cache was newly created.
-    pub fn open_or_create(config: CacheConfig<'a>) -> Result<(Self, bool)> {
+    pub fn open_or_create(config: CacheConfig<'a>, quietly: bool) -> Result<(Self, bool)> {
         if let Some(cache) = Self::open(config.clone())? {
             return Ok((cache, false));
         }
@@ -76,10 +76,12 @@ impl<'a> Cache<'a> {
                 config.pages_directory.display(),
             )
         })?;
-        eprintln!(
-            "Successfully created cache directory `{}`.",
-            config.pages_directory.display(),
-        );
+        if !quietly {
+            eprintln!(
+                "Successfully created cache directory `{}`.",
+                config.pages_directory.display(),
+            );
+        }
 
         Ok((Cache { config }, true))
     }
