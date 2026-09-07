@@ -400,7 +400,7 @@ fn try_main(args: Cli, enable_styles: bool) -> Result<ExitCode> {
     // Show command from cache
     if !command.is_empty() {
         // TODO: remove in tealdeer 1.10
-        if cache.old_custom_pages_exist()? {
+        if !args.quiet && cache.old_custom_pages_exist()? {
             print_warning(
                 enable_styles,
                 &format!(

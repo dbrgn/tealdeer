@@ -486,6 +486,32 @@ fn test_quiet_old_cache() {
 }
 
 #[test]
+fn test_quiet_old_custom_pages() {
+    let testenv = TestEnv::new()
+        .install_default_cache()
+        .write_custom_pages_config();
+
+    // A custom page using the old naming convention triggers the rename warning
+    fs::write(testenv.custom_pages_dir().join("foo.page"), "# foo\n").unwrap();
+
+    // Without `--quiet`, the warning is shown
+    testenv
+        .command()
+        .args(["which"])
+        .assert()
+        .success()
+        .stderr(contains("Custom pages using the old naming convention"));
+
+    // With `--quiet`, the warning is suppressed
+    testenv
+        .command()
+        .args(["which", "--quiet"])
+        .assert()
+        .success()
+        .stderr(contains("Custom pages using the old naming convention").not());
+}
+
+#[test]
 fn test_warn_cache_age_never() {
     let testenv = TestEnv::new().install_default_cache();
 
