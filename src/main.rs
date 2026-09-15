@@ -390,7 +390,13 @@ fn try_main(args: Cli, enable_styles: bool) -> Result<ExitCode> {
     };
 
     if args.list {
-        for page in cache.list_pages()? {
+        // The tealdeer page is embedded in the binary, so it is not part of the cache
+        let mut pages: Vec<String> = cache.list_pages()?.into_iter().collect();
+        pages.push(NAME.to_string());
+        pages.sort_unstable();
+        pages.dedup();
+
+        for page in pages {
             println!("{page}");
         }
 

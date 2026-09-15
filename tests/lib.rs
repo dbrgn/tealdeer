@@ -1020,20 +1020,28 @@ fn test_macos_is_alias_for_osx() {
         .command()
         .args(["--platform", "macos", "--list"])
         .assert()
-        .stdout("maconly\n");
+        .stdout("maconly\ntealdeer\n");
     testenv
         .command()
         .args(["--platform", "osx", "--list"])
         .assert()
-        .stdout("maconly\n");
+        .stdout("maconly\ntealdeer\n");
 
     testenv.append_to_config("search.platforms = ['osx']\n");
-    testenv.command().arg("--list").assert().stdout("maconly\n");
+    testenv
+        .command()
+        .arg("--list")
+        .assert()
+        .stdout("maconly\ntealdeer\n");
 
     testenv.delete_config();
     testenv.init_config();
     testenv.append_to_config("search.platforms = ['macos']\n");
-    testenv.command().arg("--list").assert().stdout("maconly\n");
+    testenv
+        .command()
+        .arg("--list")
+        .assert()
+        .stdout("maconly\ntealdeer\n");
 }
 
 #[test]
@@ -1073,17 +1081,17 @@ fn test_search_language_precedence() {
     };
 
     let env_cases = &[
-        (vec![], vec![], "en\n"),
-        (vec![("LANGUAGE", "de:it")], vec![], "en\n"),
+        (vec![], vec![], "en\ntealdeer\n"),
+        (vec![("LANGUAGE", "de:it")], vec![], "en\ntealdeer\n"),
         (
             vec![("LANG", "fr"), ("LANGUAGE", "de:it")],
             vec![],
-            "de\nen\nfr\nit\n",
+            "de\nen\nfr\nit\ntealdeer\n",
         ),
         (
             vec![("LANG", "fr"), ("LANGUAGE", "de:it")],
             vec!["--language", "pl"],
-            "pl\n",
+            "pl\ntealdeer\n",
         ),
     ];
     run(env_cases);
@@ -1091,13 +1099,17 @@ fn test_search_language_precedence() {
     // Environment is only used when config setting is not set
     testenv.append_to_config("search.languages = ['nl']\n");
     let config_cases = &[
-        (vec![], vec![], "nl\n"),
-        (vec![("LANGUAGE", "de:it")], vec![], "nl\n"),
-        (vec![("LANG", "fr"), ("LANGUAGE", "de:it")], vec![], "nl\n"),
+        (vec![], vec![], "nl\ntealdeer\n"),
+        (vec![("LANGUAGE", "de:it")], vec![], "nl\ntealdeer\n"),
+        (
+            vec![("LANG", "fr"), ("LANGUAGE", "de:it")],
+            vec![],
+            "nl\ntealdeer\n",
+        ),
         (
             vec![("LANG", "fr"), ("LANGUAGE", "de:it")],
             vec!["--language", "pl"],
-            "pl\n",
+            "pl\ntealdeer\n",
         ),
     ];
     run(config_cases);
@@ -1153,7 +1165,7 @@ fn test_list_flag_rendering() {
         .args(["--list"])
         .assert()
         .success()
-        .stdout("foo\n");
+        .stdout("foo\ntealdeer\n");
 
     testenv.add_entry("bar", "");
     testenv.add_entry("baz", "");
@@ -1168,7 +1180,7 @@ fn test_list_flag_rendering() {
         .args(["--list"])
         .assert()
         .success()
-        .stdout("bar\nbaz\nfaz\nfiz\nfoo\nqux\n");
+        .stdout("bar\nbaz\nfaz\nfiz\nfoo\nqux\ntealdeer\n");
 }
 
 #[test]
@@ -1182,21 +1194,21 @@ fn test_multi_platform_list_flag_rendering() {
         .args(["--list"])
         .assert()
         .success()
-        .stdout("common\n");
+        .stdout("common\ntealdeer\n");
 
     testenv
         .command()
         .args(["--platform", "linux", "--list"])
         .assert()
         .success()
-        .stdout("common\n");
+        .stdout("common\ntealdeer\n");
 
     testenv
         .command()
         .args(["--platform", "windows", "--list"])
         .assert()
         .success()
-        .stdout("common\n");
+        .stdout("common\ntealdeer\n");
 
     testenv.add_os_entry("linux", "rm", "");
     testenv.add_os_entry("linux", "ls", "");
@@ -1211,7 +1223,7 @@ fn test_multi_platform_list_flag_rendering() {
         .args(["--platform", "linux", "--list"])
         .assert()
         .success()
-        .stdout("common\nls\nrm\nwinux\n");
+        .stdout("common\nls\nrm\ntealdeer\nwinux\n");
 
     // test `--list` for `--platform windows` by itself
     testenv
@@ -1219,7 +1231,7 @@ fn test_multi_platform_list_flag_rendering() {
         .args(["--platform", "windows", "--list"])
         .assert()
         .success()
-        .stdout("common\ndel\ndir\nwinux\n");
+        .stdout("common\ndel\ndir\ntealdeer\nwinux\n");
 
     // test `--list` for `--platform linux --platform windows`
     testenv
@@ -1227,7 +1239,7 @@ fn test_multi_platform_list_flag_rendering() {
         .args(["--platform", "linux", "--platform", "windows", "--list"])
         .assert()
         .success()
-        .stdout("common\ndel\ndir\nls\nrm\nwinux\n");
+        .stdout("common\ndel\ndir\nls\nrm\ntealdeer\nwinux\n");
 
     // test `--list` for `--platform windows --platform linux`
     testenv
@@ -1235,7 +1247,7 @@ fn test_multi_platform_list_flag_rendering() {
         .args(["--platform", "linux", "--platform", "windows", "--list"])
         .assert()
         .success()
-        .stdout("common\ndel\ndir\nls\nrm\nwinux\n");
+        .stdout("common\ndel\ndir\nls\nrm\ntealdeer\nwinux\n");
 }
 
 #[cfg_attr(feature = "ignore-online-tests", ignore = "online test")]
